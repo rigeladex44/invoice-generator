@@ -255,11 +255,11 @@ function generatePDF() {
     }
     
     const { jsPDF } = window.jspdf;
-    // Ukuran landscape: 210mm x 95mm (lebar 210mm, tinggi 95mm - melebar pendek)
+    // Ukuran landscape: 210mm x 140mm (lebar 210mm, tinggi 140mm - melebar)
     const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: [95, 210] // tinggi x lebar untuk landscape
+        format: [140, 210] // tinggi x lebar untuk landscape
     });
     
     const kepadaYth = document.getElementById('kepadaYth').value;
@@ -366,8 +366,8 @@ function generatePDF() {
     doc.line(10, y - 1, 200, y - 1);
 
     // Footer - diposisikan di margin bawah (mepet ke bawah)
-    // PDF height = 95mm, footer mulai dari y = 72mm
-    const footerY = 72;
+    // PDF height = 140mm, footer mulai dari y = 110mm
+    const footerY = 110;
 
     // Bank Info - dikompres untuk tinggi 95mm
     doc.setFontSize(7);
