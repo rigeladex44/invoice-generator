@@ -255,11 +255,11 @@ function generatePDF() {
     }
     
     const { jsPDF } = window.jspdf;
-    // Ukuran 2x dari 1/3 A4 landscape: 198mm x 594mm (ukuran ditambah 100%)
+    // Ukuran A4 landscape: 297mm x 594mm (tinggi 3x dari awal, lebar 2x)
     const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: [198, 594] // tinggi x lebar (2x dari ukuran sebelumnya)
+        format: [297, 594] // tinggi x lebar (A4 landscape)
     });
     
     const kepadaYth = document.getElementById('kepadaYth').value;
@@ -357,8 +357,8 @@ function generatePDF() {
     doc.line(20, y - 4, 600, y - 4);
 
     // Footer - diposisikan di margin bawah (mepet ke bawah)
-    // PDF height = 198mm, footer height ~80mm, jadi mulai dari y = 110mm
-    const footerY = 110;
+    // PDF height = 297mm, footer height ~97mm, jadi mulai dari y = 200mm
+    const footerY = 200;
 
     // Bank Info (koordinat dan font size dikali 2)
     doc.setFontSize(16);
