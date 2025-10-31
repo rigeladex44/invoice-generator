@@ -255,54 +255,54 @@ function generatePDF() {
     }
     
     const { jsPDF } = window.jspdf;
-    // Ukuran portrait: 210mm x 396mm (lebar A4 standar, tinggi custom)
+    // Ukuran portrait: 210mm x 95mm (lebar A4 standar, tinggi custom untuk struk)
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [210, 396] // lebar x tinggi
+        format: [210, 95] // lebar x tinggi
     });
     
     const kepadaYth = document.getElementById('kepadaYth').value;
     const tanggal = formatDate(document.getElementById('tanggal').value);
     const nomorInvoice = document.getElementById('nomorInvoice').value;
     
-    // Header - disesuaikan untuk portrait
-    doc.setFontSize(14);
+    // Header - dikompres untuk tinggi 95mm
+    doc.setFontSize(10);
     doc.setFont(undefined, 'bold');
-    doc.text('ARSAKA RAYA', 10, 15);
-    doc.setFontSize(9);
+    doc.text('ARSAKA RAYA', 10, 8);
+    doc.setFontSize(7);
     doc.setFont(undefined, 'normal');
-    doc.text('Pondok Blimbing Indah, Malang, 65126.', 10, 20);
-    doc.text('Telp: +62 851 5505 8577', 10, 24);
-    doc.text('Email: arsaka.raya@rigeel.id', 10, 28);
+    doc.text('Pondok Blimbing Indah, Malang, 65126.', 10, 12);
+    doc.text('Telp: +62 851 5505 8577', 10, 15);
+    doc.text('Email: arsaka.raya@rigeel.id', 10, 18);
 
     // Kepada Yth (kanan atas) - label normal, isi (nama customer) digeser ke kanan dan bawah
-    doc.setFontSize(9);
+    doc.setFontSize(7);
     doc.setFont(undefined, 'bold');
-    doc.text('Kepada Yth', 130, 15);
+    doc.text('Kepada Yth', 130, 8);
     doc.setFont(undefined, 'normal');
-    doc.text(kepadaYth, 135, 21); // Isi nama customer digeser ke kanan dan bawah
+    doc.text(kepadaYth, 135, 12); // Isi nama customer digeser ke kanan dan bawah
 
     // Judul - center untuk portrait
-    doc.setFontSize(16);
+    doc.setFontSize(11);
     doc.setFont(undefined, 'bold');
-    doc.text('FAKTUR PENJUALAN', 105, 38, { align: 'center' });
+    doc.text('FAKTUR PENJUALAN', 105, 24, { align: 'center' });
 
     // Tanggal dan Nomor - label normal, ISI dibuat bold
-    doc.setFontSize(10);
+    doc.setFontSize(8);
     doc.setFont(undefined, 'normal');
-    doc.text('TANGGAL : ', 10, 48);
+    doc.text('TANGGAL : ', 10, 30);
     doc.setFont(undefined, 'bold');
-    doc.text(tanggal, 35, 48); // Isi tanggal bold
+    doc.text(tanggal, 32, 30); // Isi tanggal bold
 
     doc.setFont(undefined, 'normal');
-    doc.text('Nomor : ', 10, 54);
+    doc.text('Nomor : ', 10, 34);
     doc.setFont(undefined, 'bold');
-    doc.text(nomorInvoice, 30, 54); // Isi nomor bold
+    doc.text(nomorInvoice, 28, 34); // Isi nomor bold
     
-    // Tabel Header - disesuaikan untuk portrait 210mm
-    let y = 62;
-    doc.setFontSize(9);
+    // Tabel Header - disesuaikan untuk tinggi 95mm
+    let y = 40;
+    doc.setFontSize(7);
     doc.setFont(undefined, 'bold');
 
     // Kolom disesuaikan untuk lebar 210mm (total usable: 190mm)
@@ -312,21 +312,26 @@ function generatePDF() {
 
     // Draw header background
     doc.setFillColor(240, 240, 240);
-    doc.rect(10, y - 4, 190, 6, 'F');
-    doc.rect(10, y - 4, 190, 6, 'S');
-    
+    doc.rect(10, y - 3, 190, 5, 'F');
+    doc.rect(10, y - 3, 190, 5, 'S');
+
     headers.forEach((header, i) => {
         if (i === 0) {
+            // NO - center
             doc.text(header, colX[i] + colWidths[i]/2, y, { align: 'center' });
+        } else if (i === 3 || i === 5 || i === 6) {
+            // QTY, HARGA, TOTAL - align right (luruskan)
+            doc.text(header, colX[i] + colWidths[i] - 2, y, { align: 'right' });
         } else {
+            // KODE, NAMA BARANG, SAT - align left
             doc.text(header, colX[i], y);
         }
     });
 
-    y += 6; // Spacing setelah header
+    y += 5; // Spacing setelah header
     
-    // Tabel Items - disesuaikan untuk portrait
-    doc.setFontSize(8);
+    // Tabel Items - disesuaikan untuk tinggi 95mm
+    doc.setFontSize(7);
     doc.setFont(undefined, 'normal');
     const items = [];
     document.querySelectorAll('.item-row').forEach((row, index) => {
@@ -353,59 +358,59 @@ function generatePDF() {
         doc.text(formatNumber(item.harga), colX[5] + colWidths[5] - 2, y, { align: 'right' });
         doc.text(item.total, colX[6] + colWidths[6] - 2, y, { align: 'right' });
 
-        // Spacing antar baris
-        y += Math.max(6, namaLines.length * 4);
+        // Spacing antar baris (lebih kecil untuk tinggi 95mm)
+        y += Math.max(4, namaLines.length * 3);
     });
 
     // Garis penutup tabel
-    doc.line(10, y - 2, 200, y - 2);
+    doc.line(10, y - 1, 200, y - 1);
 
     // Footer - diposisikan di margin bawah (mepet ke bawah)
-    // PDF height = 396mm, footer height ~96mm, jadi mulai dari y = 300mm
-    const footerY = 300;
+    // PDF height = 95mm, footer mulai dari y = 72mm
+    const footerY = 72;
 
-    // Bank Info - disesuaikan untuk portrait
-    doc.setFontSize(9);
+    // Bank Info - dikompres untuk tinggi 95mm
+    doc.setFontSize(7);
     doc.setFont(undefined, 'bold');
     doc.text('TF NO REKENING', 10, footerY);
     doc.setFont(undefined, 'normal');
-    doc.text('BCA 1501282770', 10, footerY + 5);
-    doc.text('AN MUHAMMAD RIGEL', 10, footerY + 10);
+    doc.text('BCA 1501282770', 10, footerY + 3);
+    doc.text('AN MUHAMMAD RIGEL', 10, footerY + 6);
 
-    // Totals - disesuaikan untuk portrait
+    // Totals - dikompres untuk tinggi 95mm
     const subTotal = document.getElementById('displaySubTotal').textContent;
     const diskon = document.getElementById('displayDiskon').textContent;
     const pembayaran = document.getElementById('displayPembayaran').textContent;
     const grandTotal = document.getElementById('displayGrandTotal').textContent;
 
-    doc.setFontSize(9);
+    doc.setFontSize(7);
     doc.setFont(undefined, 'bold');
     doc.text('SUB TOTAL', 110, footerY);
     doc.setFont(undefined, 'normal');
     doc.text(subTotal, 198, footerY, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('DISC', 110, footerY + 5);
+    doc.text('DISC', 110, footerY + 3);
     doc.setFont(undefined, 'normal');
-    doc.text(diskon, 198, footerY + 5, { align: 'right' });
+    doc.text(diskon, 198, footerY + 3, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('PEMBAYARAN', 110, footerY + 10);
+    doc.text('PEMBAYARAN', 110, footerY + 6);
     doc.setFont(undefined, 'normal');
-    doc.text(pembayaran, 198, footerY + 10, { align: 'right' });
+    doc.text(pembayaran, 198, footerY + 6, { align: 'right' });
 
     // Grand Total - garis dibawah PEMBAYARAN
-    doc.line(110, footerY + 12, 200, footerY + 12);
+    doc.line(110, footerY + 7.5, 200, footerY + 7.5);
     doc.setFont(undefined, 'bold');
-    doc.setFontSize(10);
-    doc.text('JUMLAH YANG HARUS DIBAYAR', 110, footerY + 18);
-    doc.text(grandTotal, 198, footerY + 18, { align: 'right' });
+    doc.setFontSize(8);
+    doc.text('JUMLAH YANG HARUS DIBAYAR', 110, footerY + 11);
+    doc.text(grandTotal, 198, footerY + 11, { align: 'right' });
 
     // Tanda tangan - posisi di bagian bawah kanan
-    doc.setFontSize(9);
+    doc.setFontSize(7);
     doc.setFont(undefined, 'normal');
-    doc.text('HORMAT KAMI', 150, footerY + 25);
-    doc.text('(_____________)', 145, footerY + 45);
+    doc.text('HORMAT KAMI', 155, footerY + 15);
+    doc.text('(_____________)', 150, footerY + 22);
     
     // Save PDF
     const filename = `Invoice_${nomorInvoice.replace(/\./g, '_')}.pdf`;
