@@ -255,11 +255,11 @@ function generatePDF() {
     }
     
     const { jsPDF } = window.jspdf;
-    // Ukuran portrait: 210mm x 95mm (lebar A4 standar, tinggi custom untuk struk)
+    // Ukuran landscape: 210mm x 95mm (lebar 210mm, tinggi 95mm - melebar pendek)
     const doc = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'landscape',
         unit: 'mm',
-        format: [210, 95] // lebar x tinggi
+        format: [95, 210] // tinggi x lebar untuk landscape
     });
     
     const kepadaYth = document.getElementById('kepadaYth').value;
