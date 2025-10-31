@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Invoice - Arsaka Raya</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>🧾 Generator Invoice Arsaka Raya</h1>
+            <p>Buat invoice profesional dengan mudah</p>
+        </header>
+
+        <div class="form-container">
+            <form id="invoiceForm">
+                <!-- Informasi Pelanggan -->
+                <div class="form-section">
+                    <h2>Informasi Pelanggan</h2>
+                    <div class="form-group">
+                        <label for="kepadaYth">Kepada Yth:</label>
+                        <input type="text" id="kepadaYth" required placeholder="Nama pelanggan atau perusahaan">
+                    </div>
+                </div>
+
+                <!-- Informasi Invoice -->
+                <div class="form-section">
+                    <h2>Informasi Invoice</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tanggal">Tanggal:</label>
+                            <input type="date" id="tanggal" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nomorInvoice">Nomor Invoice:</label>
+                            <input type="text" id="nomorInvoice" required placeholder="T.103025.027">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daftar Barang -->
+                <div class="form-section">
+                    <h2>Daftar Barang</h2>
+                    <div id="itemsContainer">
+                        <div class="item-row" data-item="1">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Kode:</label>
+                                    <input type="text" class="item-kode" placeholder="FF158" required>
+                                </div>
+                                <div class="form-group" style="flex: 2;">
+                                    <label>Nama Barang:</label>
+                                    <input type="text" class="item-nama" placeholder="Susu UHT Indomilk" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>QTY:</label>
+                                    <input type="number" class="item-qty" placeholder="1810" required min="1">
+                                </div>
+                                <div class="form-group" style="flex: 0.8;">
+                                    <label>Satuan:</label>
+                                    <input type="text" class="item-sat" placeholder="PCS" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Harga:</label>
+                                    <input type="number" class="item-harga" placeholder="2850" required min="0">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Total:</label>
+                                    <input type="text" class="item-total" readonly>
+                                </div>
+                                <div class="form-group" style="flex: 0.3;">
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn-remove" onclick="removeItem(1)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add" onclick="addItem()">➕ Tambah Item</button>
+                </div>
+
+                <!-- Diskon dan Pembayaran -->
+                <div class="form-section">
+                    <h2>Pembayaran</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="diskon">Diskon (Rp):</label>
+                            <input type="number" id="diskon" value="0" min="0" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="pembayaran">Pembayaran (Rp):</label>
+                            <input type="number" id="pembayaran" value="0" min="0" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Sub Total:</span>
+                        <span id="displaySubTotal">Rp 0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Diskon:</span>
+                        <span id="displayDiskon">Rp 0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Pembayaran:</span>
+                        <span id="displayPembayaran">Rp 0</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Jumlah Yang Harus Dibayar:</span>
+                        <span id="displayGrandTotal">Rp 0</span>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="action-buttons">
+                    <button type="button" class="btn-preview" onclick="previewInvoice()">👁️ Preview</button>
+                    <button type="button" class="btn-generate" onclick="generatePDF()">📄 Generate PDF</button>
+                    <button type="button" class="btn-reset" onclick="resetForm()">🔄 Reset</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Modal -->
+        <div id="previewModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closePreview()">&times;</span>
+                <div id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
