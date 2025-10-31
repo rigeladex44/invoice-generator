@@ -255,11 +255,11 @@ function generatePDF() {
     }
     
     const { jsPDF } = window.jspdf;
-    // Ukuran A4 landscape: 297mm x 594mm (tinggi 3x dari awal, lebar 2x)
+    // Ukuran 4x dari awal: 396mm x 594mm (tinggi 4x, lebar 2x)
     const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: [297, 594] // tinggi x lebar (A4 landscape)
+        format: [396, 594] // tinggi x lebar
     });
     
     const kepadaYth = document.getElementById('kepadaYth').value;
@@ -299,19 +299,20 @@ function generatePDF() {
     doc.setFont(undefined, 'bold');
     doc.text(nomorInvoice, 450, 76); // Isi nomor bold
     
-    // Tabel Header - disesuaikan agar proporsional
-    let y = 90;
-    doc.setFontSize(16);
+    // Tabel Header - dirapikan dengan spacing lebih baik
+    let y = 100;
+    doc.setFontSize(18);
     doc.setFont(undefined, 'bold');
 
-    const colWidths = [30, 60, 200, 70, 50, 80, 90];
-    const colX = [20, 50, 110, 310, 380, 430, 510];
+    // Kolom dirapikan dan diperlebar
+    const colWidths = [35, 70, 220, 75, 55, 90, 100];
+    const colX = [20, 55, 125, 345, 420, 475, 565];
     const headers = ['NO', 'KODE', 'NAMA BARANG', 'QTY', 'SAT', 'HARGA', 'TOTAL'];
 
-    // Draw header background - lebar disesuaikan dengan total kolom
+    // Draw header background - dengan padding lebih besar
     doc.setFillColor(240, 240, 240);
-    doc.rect(20, y - 8, 580, 12, 'F');
-    doc.rect(20, y - 8, 580, 12, 'S');
+    doc.rect(20, y - 10, 665, 16, 'F');
+    doc.rect(20, y - 10, 665, 16, 'S');
     
     headers.forEach((header, i) => {
         if (i === 0) {
@@ -321,9 +322,10 @@ function generatePDF() {
         }
     });
 
-    y += 12;
+    y += 18; // Tambah spacing setelah header
     
-    // Tabel Items
+    // Tabel Items - font size lebih besar dan spacing lebih rapi
+    doc.setFontSize(16);
     doc.setFont(undefined, 'normal');
     const items = [];
     document.querySelectorAll('.item-row').forEach((row, index) => {
@@ -337,68 +339,72 @@ function generatePDF() {
             total: row.querySelector('.item-total').value
         };
         items.push(item);
-        
+
         doc.text(item.no.toString(), colX[0] + colWidths[0]/2, y, { align: 'center' });
         doc.text(item.kode, colX[1], y);
-        
-        // Handle nama barang panjang
-        const namaLines = doc.splitTextToSize(item.nama, colWidths[2] - 2);
+
+        // Handle nama barang panjang dengan width yang lebih besar
+        const namaLines = doc.splitTextToSize(item.nama, colWidths[2] - 5);
         doc.text(namaLines, colX[2], y);
-        
+
         doc.text(formatNumber(item.qty), colX[3] + colWidths[3] - 5, y, { align: 'right' });
         doc.text(item.sat, colX[4], y);
         doc.text(formatNumber(item.harga), colX[5] + colWidths[5] - 5, y, { align: 'right' });
         doc.text(item.total, colX[6] + colWidths[6] - 5, y, { align: 'right' });
 
-        y += Math.max(12, namaLines.length * 8);
+        // Tambah spacing antar baris (lebih besar untuk readability)
+        y += Math.max(16, namaLines.length * 10);
     });
 
-    // Garis penutup tabel - disesuaikan dengan lebar tabel
-    doc.line(20, y - 4, 600, y - 4);
+    // Garis penutup tabel - disesuaikan dengan lebar tabel baru
+    doc.line(20, y - 6, 685, y - 6);
 
     // Footer - diposisikan di margin bawah (mepet ke bawah)
-    // PDF height = 297mm, footer height ~97mm, jadi mulai dari y = 200mm
-    const footerY = 200;
+    // PDF height = 396mm, footer height ~96mm, jadi mulai dari y = 300mm
+    const footerY = 300;
 
-    // Bank Info (koordinat dan font size dikali 2)
-    doc.setFontSize(16);
+    // Bank Info - font size lebih besar
+    doc.setFontSize(18);
     doc.setFont(undefined, 'bold');
     doc.text('TF NO REKENING', 20, footerY);
     doc.setFont(undefined, 'normal');
-    doc.text('BCA 1501282770', 20, footerY + 8);
-    doc.text('AN MUHAMMAD RIGEL', 20, footerY + 16);
+    doc.text('BCA 1501282770', 20, footerY + 10);
+    doc.text('AN MUHAMMAD RIGEL', 20, footerY + 20);
 
-    // Totals - disesuaikan posisi agar rapi
+    // Totals - spacing dan font size diperbaiki
     const subTotal = document.getElementById('displaySubTotal').textContent;
     const diskon = document.getElementById('displayDiskon').textContent;
     const pembayaran = document.getElementById('displayPembayaran').textContent;
     const grandTotal = document.getElementById('displayGrandTotal').textContent;
 
+    doc.setFontSize(18);
     doc.setFont(undefined, 'bold');
-    doc.text('SUB TOTAL', 380, footerY);
+    doc.text('SUB TOTAL', 400, footerY);
     doc.setFont(undefined, 'normal');
-    doc.text(subTotal, 570, footerY, { align: 'right' });
+    doc.text(subTotal, 660, footerY, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('DISC', 380, footerY + 10);
+    doc.text('DISC', 400, footerY + 12);
     doc.setFont(undefined, 'normal');
-    doc.text(diskon, 570, footerY + 10, { align: 'right' });
+    doc.text(diskon, 660, footerY + 12, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('PEMBAYARAN', 380, footerY + 20);
+    doc.text('PEMBAYARAN', 400, footerY + 24);
     doc.setFont(undefined, 'normal');
-    doc.text(pembayaran, 570, footerY + 20, { align: 'right' });
+    doc.text(pembayaran, 660, footerY + 24, { align: 'right' });
 
     // Grand Total - garis dibawah PEMBAYARAN (sama dengan garis pembatas lainnya)
-    doc.line(380, footerY + 24, 574, footerY + 24);
+    doc.line(400, footerY + 30, 664, footerY + 30);
     doc.setFont(undefined, 'bold');
-    doc.text('JUMLAH YANG HARUS DIBAYAR', 380, footerY + 35);
-    doc.text(grandTotal, 570, footerY + 35, { align: 'right' });
+    doc.setFontSize(20);
+    doc.text('JUMLAH YANG HARUS DIBAYAR', 400, footerY + 45);
+    doc.text(grandTotal, 660, footerY + 45, { align: 'right' });
 
     // Tanda tangan - posisi di bagian bawah kanan
+    doc.setFontSize(18);
     doc.setFont(undefined, 'normal');
-    doc.text('HORMAT KAMI', 480, footerY + 50);
-    doc.text('(_____________)', 470, footerY + 80);
+    doc.text('HORMAT KAMI', 540, footerY + 60);
+    doc.text('(_____________)', 530, footerY + 90);
     
     // Save PDF
     const filename = `Invoice_${nomorInvoice.replace(/\./g, '_')}.pdf`;
