@@ -275,37 +275,43 @@ function generatePDF() {
     doc.text('Pondok Blimbing Indah, Malang, 65126.', 20, 30);
     doc.text('Telp: +62 851 5505 8577 Email: arsaka.raya@rigeel.id', 20, 38);
 
-    // Kepada Yth (kanan atas) - digeser ke kanan dan bawah (koordinat dikali 2)
+    // Kepada Yth (kanan atas) - label normal, isi (nama customer) digeser ke kanan dan bawah
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
-    doc.text('Kepada Yth', 420, 30);
+    doc.text('Kepada Yth', 400, 25);
     doc.setFont(undefined, 'normal');
-    doc.text(kepadaYth, 420, 40);
+    doc.text(kepadaYth, 420, 35); // Isi nama customer digeser ke kanan dan bawah
 
     // Judul (koordinat dan font size dikali 2)
     doc.setFontSize(28);
     doc.setFont(undefined, 'bold');
     doc.text('FAKTUR PENJUALAN', 297, 60, { align: 'center' });
 
-    // Tanggal dan Nomor - dibuat bold (koordinat dan font size dikali 2)
+    // Tanggal dan Nomor - label normal, ISI dibuat bold
     doc.setFontSize(18);
+    doc.setFont(undefined, 'normal');
+    doc.text('TANGGAL : ', 20, 76);
     doc.setFont(undefined, 'bold');
-    doc.text('TANGGAL : ' + tanggal, 20, 76);
-    doc.text('Nomor : ' + nomorInvoice, 400, 76);
+    doc.text(tanggal, 85, 76); // Isi tanggal bold
+
+    doc.setFont(undefined, 'normal');
+    doc.text('Nomor : ', 400, 76);
+    doc.setFont(undefined, 'bold');
+    doc.text(nomorInvoice, 450, 76); // Isi nomor bold
     
-    // Tabel Header (koordinat dan ukuran dikali 2)
+    // Tabel Header - disesuaikan agar proporsional
     let y = 90;
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
 
-    const colWidths = [20, 40, 170, 50, 40, 60, 70];
-    const colX = [20, 40, 80, 250, 300, 340, 400];
+    const colWidths = [30, 60, 200, 70, 50, 80, 90];
+    const colX = [20, 50, 110, 310, 380, 430, 510];
     const headers = ['NO', 'KODE', 'NAMA BARANG', 'QTY', 'SAT', 'HARGA', 'TOTAL'];
 
-    // Draw header background (koordinat dan ukuran dikali 2)
+    // Draw header background - lebar disesuaikan dengan total kolom
     doc.setFillColor(240, 240, 240);
-    doc.rect(20, y - 8, 554, 12, 'F');
-    doc.rect(20, y - 8, 554, 12, 'S');
+    doc.rect(20, y - 8, 580, 12, 'F');
+    doc.rect(20, y - 8, 580, 12, 'S');
     
     headers.forEach((header, i) => {
         if (i === 0) {
@@ -339,16 +345,16 @@ function generatePDF() {
         const namaLines = doc.splitTextToSize(item.nama, colWidths[2] - 2);
         doc.text(namaLines, colX[2], y);
         
-        doc.text(formatNumber(item.qty), colX[3] + colWidths[3] - 2, y, { align: 'right' });
+        doc.text(formatNumber(item.qty), colX[3] + colWidths[3] - 5, y, { align: 'right' });
         doc.text(item.sat, colX[4], y);
-        doc.text(formatNumber(item.harga), colX[5] + colWidths[5] - 4, y, { align: 'right' });
-        doc.text(item.total, colX[6] + colWidths[6] - 4, y, { align: 'right' });
+        doc.text(formatNumber(item.harga), colX[5] + colWidths[5] - 5, y, { align: 'right' });
+        doc.text(item.total, colX[6] + colWidths[6] - 5, y, { align: 'right' });
 
         y += Math.max(12, namaLines.length * 8);
     });
 
-    // Garis penutup tabel (koordinat dikali 2)
-    doc.line(20, y - 4, 574, y - 4);
+    // Garis penutup tabel - disesuaikan dengan lebar tabel
+    doc.line(20, y - 4, 600, y - 4);
 
     // Footer - diposisikan di margin bawah (mepet ke bawah)
     // PDF height = 198mm, footer height ~80mm, jadi mulai dari y = 110mm
@@ -362,37 +368,37 @@ function generatePDF() {
     doc.text('BCA 1501282770', 20, footerY + 8);
     doc.text('AN MUHAMMAD RIGEL', 20, footerY + 16);
 
-    // Totals (koordinat dan font size dikali 2)
+    // Totals - disesuaikan posisi agar rapi
     const subTotal = document.getElementById('displaySubTotal').textContent;
     const diskon = document.getElementById('displayDiskon').textContent;
     const pembayaran = document.getElementById('displayPembayaran').textContent;
     const grandTotal = document.getElementById('displayGrandTotal').textContent;
 
     doc.setFont(undefined, 'bold');
-    doc.text('SUB TOTAL', 360, footerY);
+    doc.text('SUB TOTAL', 380, footerY);
     doc.setFont(undefined, 'normal');
-    doc.text(subTotal, 530, footerY, { align: 'right' });
+    doc.text(subTotal, 570, footerY, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('DISC', 360, footerY + 8);
+    doc.text('DISC', 380, footerY + 10);
     doc.setFont(undefined, 'normal');
-    doc.text(diskon, 530, footerY + 8, { align: 'right' });
+    doc.text(diskon, 570, footerY + 10, { align: 'right' });
 
     doc.setFont(undefined, 'bold');
-    doc.text('PEMBAYARAN', 360, footerY + 16);
+    doc.text('PEMBAYARAN', 380, footerY + 20);
     doc.setFont(undefined, 'normal');
-    doc.text(pembayaran, 530, footerY + 16, { align: 'right' });
+    doc.text(pembayaran, 570, footerY + 20, { align: 'right' });
 
-    // Grand Total - garis dibawah PEMBAYARAN (koordinat dikali 2, sama dengan garis lainnya)
-    doc.line(360, footerY + 20, 534, footerY + 20);
+    // Grand Total - garis dibawah PEMBAYARAN (sama dengan garis pembatas lainnya)
+    doc.line(380, footerY + 24, 574, footerY + 24);
     doc.setFont(undefined, 'bold');
-    doc.text('JUMLAH YANG HARUS DIBAYAR', 360, footerY + 30);
-    doc.text(grandTotal, 530, footerY + 30, { align: 'right' });
+    doc.text('JUMLAH YANG HARUS DIBAYAR', 380, footerY + 35);
+    doc.text(grandTotal, 570, footerY + 35, { align: 'right' });
 
-    // Tanda tangan (koordinat dikali 2, posisi di bagian bawah)
+    // Tanda tangan - posisi di bagian bawah kanan
     doc.setFont(undefined, 'normal');
-    doc.text('HORMAT KAMI', 460, footerY + 44);
-    doc.text('(_____________)', 450, footerY + 84);
+    doc.text('HORMAT KAMI', 480, footerY + 50);
+    doc.text('(_____________)', 470, footerY + 80);
     
     // Save PDF
     const filename = `Invoice_${nomorInvoice.replace(/\./g, '_')}.pdf`;
